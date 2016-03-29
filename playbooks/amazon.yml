@@ -11,10 +11,11 @@
       "2": "ap-southeast-1"
       "3": "ap-southeast-2"
       "4": "eu-west-1"
-      "5": "sa-east-1"
-      "6": "us-east-1"
-      "7": "us-west-1"
-      "8": "us-west-2"
+      "5": "eu-central-1"
+      "6": "sa-east-1"
+      "7": "us-east-1"
+      "8": "us-west-1"
+      "9": "us-west-2"
 
   # This variable file is included so the ec2-security-group role knows
   # which port to open for SSH
@@ -29,10 +30,11 @@
           2. Asia Pacific     (Singapore)
           3. Asia Pacific     (Sydney)
           4. EU               (Ireland)
-          5. South America    (Sao Paulo)
-          6. US East          (Northern Virginia)
-          7. US West          (Northern California)
-          8. US West          (Oregon)
+          5. EU               (Germany)
+          6. South America    (Sao Paulo)
+          7. US East          (Northern Virginia)
+          8. US West          (Northern California)
+          9. US West          (Oregon)
         Please choose the number of your region. Press enter for default (#2) region.
       default: "2"
       private: no
@@ -55,10 +57,9 @@
 
   # Facts persist across plays, and these facts will be used in the
   # final step to make an API call to open all of the necessary ports in
-  # the EC2 security group. This is necessary because Tor chooses two
-  # random ports for the obfsproxy pluggable transports (one for obfs3
-  # and one for ScrambleSuit) and therefore the ports cannot be opened
-  # in advance before Tor is up and running.
+  # the EC2 security group. This is necessary because Tor chooses random
+  # ports for the obfsproxy pluggable transport and therefore they cannot
+  # be opened in advance before Tor is up and running.
   pre_tasks:
     - name: Set the AWS Region fact
       set_fact: aws_region={{ regions[aws_region_var] }}
@@ -80,10 +81,10 @@
 # ========================================================
   hosts: streisand-host
 
-  # The standard streisand.yml is not included because the Debian AMI
-  # uses 'admin' instead of 'root'
-  remote_user: admin
-  sudo: yes
+  # The standard streisand.yml is not included because the Ubuntu AMI
+  # uses 'ubuntu' instead of 'root'
+  remote_user: ubuntu
+  become: yes
 
   vars:
     # The rc-local role normally expects to configure firewall rules for
@@ -100,6 +101,7 @@
 
   roles:
     - common
+    - openconnect
     - openvpn
     - stunnel
     - shadowsocks
@@ -107,6 +109,8 @@
     - tinyproxy
     - tor-bridge
     - sslh
+    - monit
+    - ufw
     - streisand-mirror
     - streisand-gateway
 
@@ -120,6 +124,7 @@
   # These variable files are included so the ec2-security-group role
   # knows which ports to open
   vars_files:
+    - roles/openconnect/defaults/main.yml
     - roles/openvpn/defaults/main.yml
     - roles/shadowsocks/defaults/main.yml
     - roles/ssh/defaults/main.yml
@@ -133,9 +138,6 @@
 
     - name: Retrieve the randomly chosen Tor obfs3 port
       set_fact: "tor_obfs3_port={{ hostvars[streisand_host]['tor_obfs3_port'] }}"
-
-    - name: Retrieve the randomly chosen Tor ScrambleSuit port
-      set_fact: "tor_scramblesuit_port={{ hostvars[streisand_host]['tor_scramblesuit_port'] }}"
 
   roles:
     # We can modify the EC2 security group now that we know which

@@ -7,7 +7,7 @@ openvpn_mirror_href_base: "/mirror/openvpn"
 openvpn_samuli_seppanen_key_id: "0xC29D97ED198D22A3"
 openvpn_samuli_seppanen_expected_fingerprint: "Key fingerprint = 0330 0E11 FED1 6F59 715F  9996 C29D 97ED 198D 22A3"
 
-openvpn_version: "2.3.4"
+openvpn_version: "2.3.10"
 openvpn_base_download_url: "http://swupdate.openvpn.org/community/releases"
 
 openvpn_source_filename: "openvpn-{{ openvpn_version }}.tar.gz"
@@ -40,9 +40,9 @@ openvpn_download_urls:
   - "{{ openvpn_windows64_installer_sig_url }}"
 
 # OS X
-tunnelblick_version: "3.5.2"
-tunnelblick_build: "4270.4346"
+tunnelblick_version: "3.5.8"
+tunnelblick_build: "4270.4530"
 tunnelblick_filename: "Tunnelblick_{{ tunnelblick_version }}_build_{{ tunnelblick_build }}.dmg"
 tunnelblick_href: "{{ openvpn_mirror_href_base }}/{{ tunnelblick_filename }}"
-tunnelblick_url: "http://iweb.dl.sourceforge.net/project/tunnelblick/All%20files/{{ tunnelblick_filename }}"
-tunnelblick_checksum: "c163c3d2fb500787f37571dd5b14d57846dd73ec0fbd519505cfafee85e924c4"
+tunnelblick_url: "https://tunnelblick.net/release/{{ tunnelblick_filename }}"
+tunnelblick_checksum: "sha256:d634a9a5fd06f95c7325987197fb7890119bf0a40a3958284814958a14c20ce3"

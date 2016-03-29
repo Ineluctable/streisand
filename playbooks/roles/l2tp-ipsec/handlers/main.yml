@@ -1,5 +1,5 @@
 ---
-- name: Restart strongSwan
+- name: Restart Libreswan
   service: name=ipsec
            state=restarted
 

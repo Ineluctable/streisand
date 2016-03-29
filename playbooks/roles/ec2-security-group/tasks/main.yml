@@ -48,6 +48,12 @@
         from_port: "{{ nginx_port }}"
         to_port: "{{ nginx_port }}"
         cidr_ip: 0.0.0.0/0
+      # OpenConnect (ocserv)
+      # ---
+      - proto: "all"
+        from_port: "{{ ocserv_port }}"
+        to_port: "{{ ocserv_port }}"
+        cidr_ip: 0.0.0.0/0
       # OpenVPN
       # ---
       - proto: "{{ openvpn_protocol }}"
@@ -83,12 +89,6 @@
       - proto: tcp
         from_port: "{{ tor_obfs3_port }}"
         to_port: "{{ tor_obfs3_port }}"
-        cidr_ip: 0.0.0.0/0
-      # Tor ScrambleSuit port
-      # ---
-      - proto: tcp
-        from_port: "{{ tor_scramblesuit_port }}"
-        to_port: "{{ tor_scramblesuit_port }}"
         cidr_ip: 0.0.0.0/0
     rules_egress:
       - proto: all

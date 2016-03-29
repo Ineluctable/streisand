@@ -36,7 +36,7 @@
         state=absent
 
 - name: Generate a random Gateway password
-  shell: grep -v "'" /usr/share/dict/american-english-huge | grep -v "[^ a-z]|[^ A-Z]" | sort -R | tail -n 4 | xargs | sed -e 's/ /-/g' > {{ streisand_gateway_password_file }}
+  shell: grep -v -P "[\x80-\xFF]" /usr/share/dict/american-english-huge | sed -e "s/'//" | shuf -n 4 | xargs | sed -e 's/ /-/g' > {{ streisand_gateway_password_file }}
          creates={{ streisand_gateway_password_file }}
 
 - name: Register the Gateway password
@@ -96,7 +96,7 @@
     - { src: "instructions.md.j2", dest: "{{ streisand_gateway_markdown_instructions }}" }
     - { src: "firewall.md.j2", dest: "{{ streisand_gateway_markdown_firewall_information }}" }
 
-- name: Convert the Markdown Gateway index, instructions, and firewall infomration into HTML and surround them with the header and footer template
+- name: Convert the Markdown Gateway index, instructions, and firewall information into HTML and surround them with the header and footer template
   shell: markdown {{ item.md }} | cat {{ streisand_header_template }} - {{ streisand_footer_template }} > {{ item.html }}
   with_items:
     - { md: "{{ streisand_gateway_markdown_index }}",                html: "{{ streisand_gateway_html_index }}" }
@@ -104,7 +104,7 @@
     - { md: "{{ streisand_gateway_markdown_firewall_information }}", html: "{{ streisand_gateway_html_firewall_information }}" }
 
 - name: Fetch the Gateway HTML instructions and firewall information
-  fetch: dest={{ streisand_local_directory }}/
+  fetch: dest=../{{ streisand_local_directory }}/
          src={{ item }}
          flat=yes
   with_items:
@@ -137,9 +137,9 @@
   local_action: command xdg-open {{ streisand_local_directory }}/{{ streisand_server_name }}.html
   ignore_errors: yes
   when: hostvars['127.0.0.1']['ansible_system'] == "Linux"
-  sudo: no
+  become: no
 
 - name: Open the instructions on OS X (if applicable)
   local_action: command open {{ streisand_local_directory }}/{{ streisand_server_name }}.html
   when: hostvars['127.0.0.1']['ansible_system'] == "Darwin"
-  sudo: no
+  become: no
